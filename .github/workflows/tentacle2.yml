@@ -60,7 +60,7 @@ jobs:
           TARGET_URL: ${{ secrets.TARGET_URL }}
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
         run: |
-          python download_rendered_html_playwright.py
+          python octopus_wright.py
 
       # 8️⃣ Upload outputs as artifact
       - name: Upload rendered HTML output
