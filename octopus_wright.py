@@ -43,7 +43,7 @@ def upload_to_blob(file_path: Path, container_name: str = "html-results"):
         if not container_client.exists():
             print(f"Container '{container_name}' does not exist — creating.")
             container_client.create_container()
-        blob_name = file_path.name
+        blob_name = f"input/{file_path.name}"
         print(f"Uploading {file_path} to container '{container_name}' as blob '{blob_name}'...")
         with file_path.open("rb") as data:
             container_client.upload_blob(name=blob_name, data=data, overwrite=True)
@@ -57,7 +57,7 @@ def main():
     url = get_env_url()
     timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     safe_name = url.replace("://", "_").replace("/", "_").replace("?", "_").replace("&", "_")
-    filename = OUTPUT_DIR / f"input/{safe_name}_{timestamp}.html"
+    filename = OUTPUT_DIR / f"{safe_name}_{timestamp}.html"
 
     print(f"Opening browser and rendering: {url}")
     with sync_playwright() as p:
