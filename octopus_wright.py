@@ -57,7 +57,7 @@ def main():
     url = get_env_url()
     timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     safe_name = url.replace("://", "_").replace("/", "_").replace("?", "_").replace("&", "_")
-    filename = OUTPUT_DIR / f"{safe_name}_{timestamp}.html"
+    filename = OUTPUT_DIR / f"input/{safe_name}_{timestamp}.html"
 
     print(f"Opening browser and rendering: {url}")
     with sync_playwright() as p:
