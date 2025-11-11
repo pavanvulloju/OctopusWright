@@ -1,8 +1,8 @@
-name: Playwright Scraper (Optimized Twice Daily)
+name: Octopus Scraper (Optimized Daily)
 
 on:
   schedule:
-    - cron: '0 6,18 * * *'   # Twice a day (06:00 & 18:00 UTC)
+    - cron: '0 10 * * *'   # Daily once (10:00 UTC)
   workflow_dispatch:
 
 jobs:
