@@ -1,0 +1,70 @@
+name: Playwright Scraper (Optimized Twice Daily)
+
+on:
+  schedule:
+    - cron: '0 6,18 * * *'   # Twice a day (06:00 & 18:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Safety cap
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Cache pip dependencies
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 3️⃣ Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 4️⃣ Install dependencies
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 5️⃣ Cache Playwright browsers (Chromium)
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      # 6️⃣ Install Playwright browsers if missing
+      - name: Install Playwright browsers
+        run: |
+          if [ ! -d ~/.cache/ms-playwright ]; then
+            python -m playwright install --with-deps chromium
+          else
+            echo "Playwright browsers already cached."
+          fi
+
+      # 7️⃣ Run scraper
+      - name: Run Playwright scraper
+        env:
+          TARGET_URL: ${{ secrets.TARGET_URL }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+        run: |
+          python download_rendered_html_playwright.py
+
+      # 8️⃣ Upload outputs as artifact
+      - name: Upload rendered HTML output
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-html
+          path: outputs/*.html
