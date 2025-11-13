@@ -38,21 +38,26 @@ jobs:
 
       # 5️⃣ Cache Playwright browsers (Chromium)
       - name: Cache Playwright browsers
+        id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-chromium
+          key: ${{ runner.os }}-playwright-chromium-v2
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      # 6️⃣ Install Playwright browsers if missing
-      - name: Install Playwright browsers
+      # 6️⃣ Ensure Chromium is installed
+      - name: Ensure Chromium browser installed
         run: |
-          if [ ! -d ~/.cache/ms-playwright ]; then
+          echo "Checking Playwright Chromium installation..."
+          if [ ! -f ~/.cache/ms-playwright/chromium-*/*/chrome-linux/chrome ] && \
+             [ ! -f ~/.cache/ms-playwright/chromium-*/*/chrome-win/chrome.exe ]; then
+            echo "Chromium not found — installing fresh copy."
             python -m playwright install --with-deps chromium
           else
-            echo "Playwright browsers already cached."
+            echo "Chromium already available in cache."
           fi
+
 
       # 7️⃣ Run scraper
       - name: Run Playwright scraper
