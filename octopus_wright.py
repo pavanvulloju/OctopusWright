@@ -38,11 +38,8 @@ def upload_to_blob(file_path: Path, container_name: str = "html-results"):
         return False
 
     blob_service = BlobServiceClient.from_connection_string(conn_str)
+    container_client = blob_service.get_container_client(container_name)
     try:
-        container_client = blob_service.get_container_client(container_name)
-        if not container_client.exists():
-            print(f"Container '{container_name}' does not exist — creating.")
-            container_client.create_container()
         blob_name = f"input/{file_path.name}"
         print(f"Uploading {file_path} to container '{container_name}' as blob '{blob_name}'...")
         with file_path.open("rb") as data:
